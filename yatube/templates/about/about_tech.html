@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+  <title>Технологии</title>
+  <div class="row">
+    <h1>Вот что я умею</h1>
+    <aside class="col-12 col-md-3">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          Visual Studio Code
+          <a href="https://code.visualstudio.com/">
+            <img src="{% static 'img/vscode_logo.png' %}"
+                 width="100"
+                 height="100"
+                 alt=""
+                 class="d-inline-block alight-top"/>
+          </a>
+        </li>
+        <li class="list-group-item">
+          Github
+          <a href="https://github.com/">
+            <img src="{% static 'img/github_logo.jpg' %}"
+                 width="100"
+                 height="100"
+                 alt=""
+                 class="d-inline-block alight-top"/>
+          </a>
+        </li>
+        <li class="list-group-item">
+          Python
+          <a href="https://www.python.org/">
+            <img src="{% static 'img/python_logo.png' %}"
+                 width="100"
+                 height="100"
+                 alt=""
+                 class="d-inline-block alight-top"/>
+          </a>
+        </li>
+        <li class="list-group-item">
+          Django
+          <a href="https://www.djangoproject.com/">
+            <img src="{% static 'img/django_logo.png' %}"
+                 width="100"
+                 height="100"
+                 alt=""
+                 class="d-inline-block alight-top"/>
+          </a>
+        </li>
+      </ul>
+    </aside>
+    <article class="col-12 col-md-9">
+      <p>Пока что тяжело дается верстка HTML.</p>
+      <p>
+        В Django очень много встроенных функций,
+        моделей, форм - тяжело запоминается что куда и откуда.
+      </p>
+    </article>
+  </div>
+{% endblock content %}

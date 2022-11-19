@@ -1,0 +1,8 @@
+<!-- templates/users/login.html -->
+{% extends "base.html" %}
+{% block title %} Войти {% endblock title %}
+{% block content %}
+  {% with card_header='Войти на сайт' card_body='' form=form button_text='Войти' login=True %}
+    {% include 'users/includes/card.html' %} 
+  {% endwith %}
+{% endblock content %}
