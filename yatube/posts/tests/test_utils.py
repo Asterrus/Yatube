@@ -35,10 +35,6 @@ class PaginatorViewsTest(TestCase):
     def test_cache_test(self) -> None:
         'Работа кэша'
         response_1 = self.guest_client.get(reverse(self.index_page))
-        self.assertIn(
-            self.post_test,
-            response_1.context[self.page_obj].object_list,
-            'Нет поста на странице')
         Post.objects.create(text='test_post', author=self.paginator_tester)
         response_2 = self.guest_client.get(reverse(self.index_page))
         self.assertEqual(
