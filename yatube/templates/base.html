@@ -28,17 +28,13 @@
     {% endblock title %}
   </head>
   <body>
-    <header>
       {% include "includes/header.html" %}
       {% block header %}
       {% endblock header %}
-    </header>
     <main id="base_body">
       {% block content %}
       {% endblock content %}
     </main>
-    <footer class="page-footer font-small blue border-top">
-      {% include "includes/footer.html" %}
-    </footer>
+    {% include "includes/footer.html" %}
   </body>
 </html>

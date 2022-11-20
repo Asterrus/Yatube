@@ -1,13 +1,15 @@
 import shutil
 import tempfile
+from collections import namedtuple
 
 from django import forms
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import IntegrityError
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
-from ..models import Comment, Group, Post, User
+from ..models import Comment, Follow, Group, Post, User
 
 # Тесты:
 #  При обращении к определённому имени url, вызывается правильный шаблон.
@@ -58,32 +60,25 @@ class TestPostsViews(TestCase):
             post=cls.t_post
         )
         cls.page_obj = 'page_obj'
-        cls.names_args_templates = {
-            'index': ('posts:index', {}, 'posts/index.html'),
-            'group_list': (
-                'posts:group_list', {'group_slug': cls.t_group1.slug},
-                'posts/group_list.html'),
-            'profile': (
-                'posts:profile', {'username': cls.tester_1.username},
-                'posts/profile.html'),
-            'post_detail': (
-                'posts:post_detail', {'post_id': cls.t_post.id},
-                'posts/post_detail.html'),
-            'post_create': ('posts:post_create', {}, 'posts/post_create.html'),
-            'post_edit': (
-                'posts:post_edit', {'post_id': cls.t_post.id},
-                'posts/post_create.html'),
-            'add_comment': (
-                'posts:add_comment', {'post_id': cls.t_post.id},
-                None),
-            'follow_index': ('posts:follow_index', {}, 'posts/follow.html'),
-            'profile_follow': (
-                'posts:profile_follow', {'username': cls.tester_1.username},
-                None),
-            'profile_unfollow': (
-                'posts:profile_unfollow', {'username': cls.tester_1.username},
-                None),
-        }
+        Page = namedtuple('Page', 'name arg template')
+        cls.index_page = Page('posts:index', '', 'posts/index.html')
+        cls.group_list_page = Page(
+            'posts:group_list', [cls.t_group1.slug], 'posts/group_list.html')
+        cls.profile_page = Page(
+            'posts:profile', [cls.tester_1.username], 'posts/profile.html')
+        cls.post_detail_page = Page(
+            'posts:post_detail', [cls.t_post.id], 'posts/post_detail.html')
+        cls.post_create_page = Page(
+            'posts:post_create', '', 'posts/post_create.html')
+        cls.post_edit_page = Page(
+            'posts:post_edit', [cls.t_post.id], 'posts/post_create.html')
+        cls.add_comment_page = Page('posts:add_comment', [cls.t_post.id], None)
+        cls.follow_index_page = Page(
+            'posts:follow_index', None, 'posts/follow.html')
+        cls.profile_follow_page = Page(
+            'posts:profile_follow', [cls.tester_1.username], None)
+        cls.profile_unfollow_page = Page(
+            'posts:profile_unfollow', [cls.tester_1.username], None)
 
     @classmethod
     def tearDownClass(cls):
@@ -92,29 +87,29 @@ class TestPostsViews(TestCase):
 
     def test_pages_uses_correct_templates(self):
         """URL адреса приложения posts используют правильный шаблон."""
-        for name in self.names_args_templates:
-            url_name, args, template = self.names_args_templates[name]
-            if template:
-                with self.subTest(name=name):
-                    response = self.auth_client.get(
-                        reverse(url_name, kwargs=args))
-                    self.assertTemplateUsed(response, template)
+        list_pages = [self.index_page, self.group_list_page, self.profile_page,
+                      self.post_detail_page, self.post_create_page,
+                      self.post_edit_page, self.follow_index_page]
+        for page in list_pages:
+            with self.subTest(page=page):
+                response = self.auth_client.get(
+                    reverse(page.name, args=page.arg))
+                self.assertTemplateUsed(response, page.template)
 
     def test_pages_have_1_post(self):
         """Проверка количества постов на страницах
            index, group_list, profile."""
-        required_pages = ['index', 'group_list', 'profile']
-        for page in required_pages:
+        pages = [self.group_list_page, self.profile_page, self.index_page]
+        for page in pages:
             with self.subTest(page=page):
-                name, args = self.names_args_templates[page][:2]
-                response = self.guest_client.get(reverse(name, kwargs=args))
+                response = self.guest_client.get(reverse(
+                    page.name, args=page.arg))
                 self.assertEqual(len(response.context[self.page_obj]), 1)
 
     def test_index_page_show_correct_context(self):
         """Проверка корректности контекста в шаблоне
            posts/index.html"""
-        index_name = self.names_args_templates['index'][0]
-        response = self.auth_client.get(reverse(index_name))
+        response = self.auth_client.get(reverse(self.index_page.name))
         first_object = response.context[self.page_obj][0]
         self.assertEqual(first_object.text, self.t_post.text)
         self.assertEqual(first_object.group.title, self.t_post.group.title)
@@ -122,8 +117,8 @@ class TestPostsViews(TestCase):
 
     def test_post_detail_pages_show_correct_context(self):
         """Шаблон post_detail сформирован с правильным контекстом."""
-        det_name, args = self.names_args_templates['post_detail'][:2]
-        response = self.auth_client.get(reverse(det_name, kwargs=args))
+        response = self.auth_client.get(reverse(
+            self.post_detail_page.name, args=self.post_detail_page.arg))
         context_post = response.context['post']
         post = self.t_post
         self.assertEqual(context_post.text, post.text)
@@ -136,15 +131,13 @@ class TestPostsViews(TestCase):
 
     def test_post_create_initial_value(self):
         """Предустановленнное значение post_create."""
-        create_name = self.names_args_templates['post_create'][0]
-        response = self.guest_client.get(reverse(create_name))
+        response = self.guest_client.get(reverse(self.post_create_page.name))
         self.assertIs(response.context, None)
 
     def test_post_create_show_correct_context(self):
         """Шаблон create_post создания поста
            сформирован с правильным контекстом."""
-        create_name = self.names_args_templates['post_create'][0]
-        response = self.auth_client.get(reverse(create_name))
+        response = self.auth_client.get(reverse(self.post_create_page.name))
         form_fields = {
             'text': forms.fields.CharField,
             'group': forms.fields.ChoiceField,
@@ -158,8 +151,8 @@ class TestPostsViews(TestCase):
     def test_post_edit_show_correct_context(self):
         """Шаблон edit_post изменения поста
            сформирован с правильным контекстом."""
-        edit_name, args = self.names_args_templates['post_edit'][:2]
-        response = self.auth_client.get(reverse(edit_name, kwargs=args))
+        response = self.auth_client.get(reverse(
+            self.post_edit_page.name, args=self.post_edit_page.arg))
         form_fields = {
             'text': forms.fields.CharField,
             'group': forms.fields.ChoiceField,
@@ -172,11 +165,11 @@ class TestPostsViews(TestCase):
     def test_post_with_group_in_all_required_pages(self):
         """Проверка нахождения поста на страницах
            index, group_list и profile."""
-        required_paths = ['index', 'group_list', 'profile']
-        for page in required_paths:
+        pages = [self.group_list_page, self.profile_page, self.index_page]
+        for page in pages:
             with self.subTest(page_name=page):
-                name, args = self.names_args_templates[page][:2]
-                response = self.auth_client.get(reverse(name, kwargs=args))
+                response = self.auth_client.get(reverse(
+                    page.name, args=page.arg))
                 self.assertIn(
                     self.t_post,
                     response.context[self.page_obj].object_list
@@ -186,8 +179,8 @@ class TestPostsViews(TestCase):
         """Проверка отсутствия поста группы 2 в списке группы 1."""
         t_post2 = Post.objects.create(
             text='test_text2', author=self.tester_2, group=self.t_group2)
-        group_name, args = self.names_args_templates['group_list'][:2]
-        response = self.guest_client.get(reverse(group_name, kwargs=args))
+        response = self.guest_client.get(reverse(
+            self.group_list_page.name, args=self.group_list_page.arg))
 
         if response.context[self.page_obj]:
             self.assertNotIn(
@@ -219,11 +212,11 @@ class TestPostsViews(TestCase):
             image=uploaded_image
         )
         # index, group_list, profile
-        required_paths = ['index', 'group_list', 'profile']
-        for page in required_paths:
+        pages = [self.group_list_page, self.profile_page, self.index_page]
+        for page in pages:
             with self.subTest(page=page):
-                name, args = self.names_args_templates[page][:2]
-                response = self.auth_client.get(reverse(name, kwargs=args))
+                response = self.auth_client.get(reverse(
+                    page.name, args=page.arg))
                 # Пост есть на странице
                 self.assertIn(
                     post_with_image,
@@ -233,22 +226,27 @@ class TestPostsViews(TestCase):
                 # У поста есть картинка
                 self.assertTrue(post_with_image.image)
         # post_detail
-        det_name = self.names_args_templates['post_detail'][0]
-        args = {'post_id': post_with_image.id}
-        response = self.auth_client.get(reverse(det_name, kwargs=args))
+        args = [post_with_image.id]
+        response = self.auth_client.get(reverse(
+            self.post_detail_page.name, args=args))
         self.assertTrue(response.context['post'].image)
 
     def test_auth_user_can_following(self):
         """Проверка что авторизованный пользователь может подписываться
            на других пользователей и удалять их из подписок"""
         self.follower.get(reverse(
-            self.names_args_templates['profile_follow'][0],
-            kwargs=self.names_args_templates['profile_follow'][1]))
+            self.profile_follow_page.name,
+            args=self.profile_follow_page.arg))
         self.assertTrue(self.tester_2.follower.filter(
                         author=self.tester_1).exists())
+
+        self.assertRaisesMessage(
+            IntegrityError,
+            Follow.objects.create(user=self.tester_1, author=self.tester_2))
+
         self.follower.get(reverse(
-            self.names_args_templates['profile_unfollow'][0],
-            kwargs=self.names_args_templates['profile_unfollow'][1]))
+            self.profile_unfollow_page.name,
+            args=self.profile_unfollow_page.arg))
         self.assertFalse(self.tester_2.follower.filter(
                          author=self.tester_1).exists())
 
@@ -258,11 +256,10 @@ class TestPostsViews(TestCase):
            кто не подписан. """
 
         self.follower.get(reverse(
-            self.names_args_templates['profile_follow'][0],
-            kwargs=self.names_args_templates['profile_follow'][1]))
+            self.profile_follow_page.name,
+            args=self.profile_follow_page.arg))
 
-        response = self.follower.get(reverse(
-            self.names_args_templates['follow_index'][0]))
+        response = self.follower.get(reverse(self.follow_index_page.name))
 
         self.assertEqual(response.context['posts'][0], self.t_post,
                          'У подписчика не отобразился пост')
@@ -270,8 +267,7 @@ class TestPostsViews(TestCase):
         Post(text='тестовый пост', author=self.tester_2).save()
         follower_post = Post.objects.get(text='тестовый пост')
 
-        response = self.auth_client.get(reverse(
-            self.names_args_templates['follow_index'][0]))
+        response = self.follower.get(reverse(self.follow_index_page.name))
 
         self.assertNotIn(follower_post, response.context['posts'],
                          'Пост отобразился у не подписанного пользователя')

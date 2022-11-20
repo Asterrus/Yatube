@@ -19,10 +19,6 @@ def permission_denied(request, exception):
     return render(request, 'core/403.html', status=403)
 
 
-def csrf_failure(request, reason=''):
-    return render(request, 'core/403csrf.html')
-
-
 class PostsListView(ListView):
     model = Post
     paginate_by: int = POSTS_ON_PAGE

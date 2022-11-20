@@ -44,7 +44,7 @@ class Post(BaseModel):
         return reverse("posts:post_detail", kwargs={"post_id": self.pk})
 
     class Meta:
-        ordering = ['-created', 'text']
+        ordering = ['-created']
         verbose_name = 'Пост'
         verbose_name_plural = 'Посты'
 
@@ -77,3 +77,10 @@ class Follow(models.Model):
         related_name='following',
         on_delete=models.CASCADE
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='UniqueFollow')
+        ]

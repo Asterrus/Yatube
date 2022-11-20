@@ -38,11 +38,10 @@ class ProfileView(PostsListView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        author = User.objects.get(username=self.kwargs['username'])
-        user = self.request.user
-        if user.is_authenticated:
-            follow = (user.follower.filter(author=author).exists()
-                      or author == user)
+        author = get_object_or_404(User, username=self.kwargs['username'])
+        if self.request.user.is_authenticated:
+            follow = (self.request.user.follower.filter(author=author).exists()
+                      or author == self.request.user)
             context['following'] = follow
         return context
 
@@ -53,7 +52,8 @@ class PostDetailView(DetailView):
     context_object_name = 'post'
 
     def get_object(self):
-        return Post.objects.select_related('author', 'group').get(
+        return get_object_or_404(
+            Post.objects.select_related('author', 'group'),
             id=self.kwargs['post_id'])
 
     def get_context_data(self, **kwargs):
@@ -131,21 +131,16 @@ class FollowIndex(LoginRequiredMixin, PostsListView):
 class ProfileFollowView(LoginRequiredMixin, View):
 
     def get(self, request: HttpRequest, *args: str, **kwargs: Any):
-        author = User.objects.get(username=kwargs['username'])
-        user = request.user
-        if not (user.follower.filter(author=author).exists()
-                or author == user):
-            Follow(user=user, author=author).save()
-        return redirect(reverse(
-            'posts:profile', kwargs={'username': kwargs['username']}))
+        author = get_object_or_404(User, username=kwargs['username'])
+        if not (request.user.follower.filter(author=author).exists()
+                or author == request.user):
+            Follow(user=request.user, author=author).save()
+        return redirect(reverse('posts:profile', args=[kwargs['username']]))
 
 
 class ProfileUnfollowView(LoginRequiredMixin, View):
 
     def get(self, request: HttpRequest, *args: str, **kwargs: Any):
-        author = User.objects.get(username=kwargs['username'])
-        user = request.user
-        if user.follower.filter(author=author).exists():
-            Follow.objects.get(author=author, user=user).delete()
-        return redirect(reverse(
-            'posts:profile', kwargs={'username': kwargs['username']}))
+        author = get_object_or_404(User, username=kwargs['username'])
+        Follow.objects.get(author=author, user=request.user).delete()
+        return redirect(reverse('posts:profile', args=[kwargs['username']]))
