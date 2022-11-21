@@ -63,6 +63,12 @@ class Comment(BaseModel):
         on_delete=models.CASCADE
     )
 
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return self.text[:POST_STR_NAME_LENGTH]
 
 class Follow(models.Model):
     user = models.ForeignKey(
@@ -84,3 +90,8 @@ class Follow(models.Model):
                 fields=['user', 'author'],
                 name='UniqueFollow')
         ]
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+
+    def __str__(self):
+        return f'{self.user} подписан на {self.author}'

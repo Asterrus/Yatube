@@ -8,7 +8,7 @@ from django.forms import BaseForm, BaseModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, DetailView, UpdateView, View
+from django.views.generic import CreateView, DetailView, UpdateView, View, DeleteView
 
 from .forms import CommentForm, PostForm
 from .models import Follow, Post, User
@@ -77,6 +77,24 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         new_post.save()
         return redirect(self.get_success_url(new_post.author))
 
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Post
+    pk_url_kwarg: str = 'post_id'
+    def get(self, request: HttpRequest, *args: str, **kwargs: Any):
+        post = get_object_or_404(Post, id=kwargs['post_id'])
+        post.delete()
+        return redirect(reverse('posts:index'))
+        
+    def test_func(self) -> Optional[bool]:
+        return self.get_object().author == self.request.user
+    
+    def handle_no_permission(self):
+        post = self.get_object()
+        if not self.request.user.is_authenticated:
+            return redirect(
+                '/auth/login/?next=' + reverse(
+                    'posts:post_detail', kwargs={'post_id': post.pk}))
+        return redirect(post.get_absolute_url())
 
 class PostEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post

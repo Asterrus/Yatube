@@ -9,10 +9,9 @@ SECRET_KEY = '=pumeter1u+&j#tw^d#o!z2%9+c6q7dk0pm4ij*q=cb)x8yish'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '[::1]',
-    'testserver',
+    'www.Asterrus.pythonanywhere.com',
+    'Asterrus.pythonanywhere.com',
+    '127.0.0.1'
 ]
 
 
@@ -126,17 +125,17 @@ LOGIN_REDIRECT_URL = '/'
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
-# if DEBUG:
-#     MIDDLEWARE += (
-#         'debug_toolbar.middleware.DebugToolbarMiddleware',
-#     )
-#     INSTALLED_APPS += (
-#         'debug_toolbar',
-#     )
-#     INTERNAL_IPS = ('127.0.0.1', )
-#     DEBUG_TOOLBAR_CONFIG = {
-#         'INTERCEPT_REDIRECTS': False,
-#     }
+if DEBUG:
+    MIDDLEWARE += (
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    )
+    INSTALLED_APPS += (
+        'debug_toolbar',
+    )
+    INTERNAL_IPS = ('127.0.0.1', )
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+    }
 
 CACHES = {
     'default': {

@@ -72,6 +72,8 @@ class TestPostsViews(TestCase):
             'posts:post_create', '', 'posts/post_create.html')
         cls.post_edit_page = Page(
             'posts:post_edit', [cls.t_post.id], 'posts/post_create.html')
+        cls.post_delete_page = Page(
+            'posts:post_delete', [cls.t_post.id], 'posts/post_delete.html')
         cls.add_comment_page = Page('posts:add_comment', [cls.t_post.id], None)
         cls.follow_index_page = Page(
             'posts:follow_index', None, 'posts/follow.html')

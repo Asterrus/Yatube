@@ -8,6 +8,7 @@
 {% include 'posts/includes/switcher.html' %}
   <div class="container py-5">
     <h1 class="index_title">Последние обновления на сайте</h1>
+    <hr>
     {% for post in posts %}
           {% include 'includes/post_card.html' %}
       {% if not forloop.last %}<hr/>{% endif %}

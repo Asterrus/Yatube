@@ -35,6 +35,11 @@
         <p>{{ post.text }}</p>
         {% if request.user == post.author %}
           <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">Редактировать запись</a>
+          <a
+            href="{% url 'posts:post_delete' post.id %}"
+            onclick="return confirm('Вы уверены?')"
+            class="btn btn-danger">Удалить запись
+          </a>
         {% endif %}
           <!-- эта форма видна только авторизованному пользователю  -->
           <div class="card my-4">

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
+{% load cache %}
+{% cache 500 about_tech %}
   <title>Технологии</title>
   <div class="row">
     <h1>Вот что я умею</h1>
@@ -55,4 +57,5 @@
       </p>
     </article>
   </div>
+{% endcache %}
 {% endblock content %}
