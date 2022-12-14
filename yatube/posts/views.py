@@ -1,6 +1,8 @@
 
 from typing import Any, Dict, Optional, Type
 
+from django.db import IntegrityError
+
 from core.views import PostsListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Model
@@ -77,17 +79,19 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         new_post.save()
         return redirect(self.get_success_url(new_post.author))
 
+
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     pk_url_kwarg: str = 'post_id'
+
     def get(self, request: HttpRequest, *args: str, **kwargs: Any):
         post = get_object_or_404(Post, id=kwargs['post_id'])
         post.delete()
         return redirect(reverse('posts:index'))
-        
+
     def test_func(self) -> Optional[bool]:
         return self.get_object().author == self.request.user
-    
+
     def handle_no_permission(self):
         post = self.get_object()
         if not self.request.user.is_authenticated:
@@ -95,6 +99,7 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
                 '/auth/login/?next=' + reverse(
                     'posts:post_detail', kwargs={'post_id': post.pk}))
         return redirect(post.get_absolute_url())
+
 
 class PostEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
@@ -150,10 +155,13 @@ class ProfileFollowView(LoginRequiredMixin, View):
 
     def get(self, request: HttpRequest, *args: str, **kwargs: Any):
         author = get_object_or_404(User, username=kwargs['username'])
-        if not (request.user.follower.filter(author=author).exists()
-                or author == request.user):
-            Follow(user=request.user, author=author).save()
-        return redirect(reverse('posts:profile', args=[kwargs['username']]))
+        try:
+            Follow.objects.get_or_create(user=request.user, author=author)
+            return redirect(reverse(
+                'posts:profile', args=[kwargs['username']]))
+        except IntegrityError:
+            return redirect(reverse(
+                'posts:profile', args=[kwargs['username']]))
 
 
 class ProfileUnfollowView(LoginRequiredMixin, View):

@@ -2,6 +2,7 @@ from core.models import BaseModel
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
+from django.db.models import CheckConstraint, Q, F, UniqueConstraint
 
 User = get_user_model()
 POST_STR_NAME_LENGTH = 15
@@ -86,9 +87,13 @@ class Follow(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
+            UniqueConstraint(
                 fields=['user', 'author'],
-                name='UniqueFollow')
+                name="users already followed"),
+            CheckConstraint(
+                check=~Q(user=F('author')),
+                name='check_user_not_author',
+            ),
         ]
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'

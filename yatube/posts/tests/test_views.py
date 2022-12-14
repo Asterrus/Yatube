@@ -5,7 +5,8 @@ from collections import namedtuple
 from django import forms
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.db import IntegrityError
+from django.db import IntegrityError as dbIntegrityError
+from django.db.utils import IntegrityError as djangoIntegrityError
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
@@ -242,10 +243,6 @@ class TestPostsViews(TestCase):
         self.assertTrue(self.tester_2.follower.filter(
                         author=self.tester_1).exists())
 
-        self.assertRaisesMessage(
-            IntegrityError,
-            Follow.objects.create(user=self.tester_1, author=self.tester_2))
-
         self.follower.get(reverse(
             self.profile_unfollow_page.name,
             args=self.profile_unfollow_page.arg))
@@ -273,3 +270,20 @@ class TestPostsViews(TestCase):
 
         self.assertNotIn(follower_post, response.context['posts'],
                          'Пост отобразился у не подписанного пользователя')
+
+    def test_cant_follow_dublicate(self):
+        """Проверка отсутствия возможности подписаться
+           на самого себя"""
+        name = "check_user_not_author"
+        with self.assertRaisesMessage(dbIntegrityError, name):
+            Follow.objects.create(user=self.tester_1, author=self.tester_1)
+
+    def test_cant_follow_to_yourself(self):
+        """Проверка отсутствия возможности подписаться
+           на одного и того же автора 2 раза"""
+        Follow.objects.create(user=self.tester_1, author=self.tester_2)
+        print(Follow.objects.all())
+        name = ('UNIQUE constraint failed: posts_follow.user_id, '
+                + 'posts_follow.author_id')
+        with self.assertRaisesMessage(djangoIntegrityError, name):
+            Follow.objects.create(user=self.tester_1, author=self.tester_2)
