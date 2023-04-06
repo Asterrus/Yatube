@@ -3,6 +3,7 @@ from typing import Any, Dict, Optional, Type
 
 from django.db import IntegrityError
 
+
 from core.views import PostsListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Model
@@ -10,10 +11,10 @@ from django.forms import BaseForm, BaseModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, DetailView, UpdateView, View, DeleteView
+from django.views.generic import CreateView, DetailView, UpdateView, View, DeleteView, ListView
 
 from .forms import CommentForm, PostForm
-from .models import Follow, Post, User
+from .models import Follow, Group, Post, User
 
 
 class IndexView(PostsListView):
@@ -21,7 +22,10 @@ class IndexView(PostsListView):
 
     def get_queryset(self):
         return Post.objects.select_related('group', 'author').all()
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print(context)
+        return context
 
 class GroupListView(PostsListView):
     template_name: str = 'posts/group_list.html'
@@ -29,8 +33,10 @@ class GroupListView(PostsListView):
     def get_queryset(self):
         return Post.objects.select_related('group', 'author').filter(
             group__slug=self.kwargs['group_slug'])
-
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print(context)
+        return context
 class ProfileView(PostsListView):
     template_name: str = 'posts/profile.html'
 
@@ -60,6 +66,7 @@ class PostDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        print(context)
         context['form'] = CommentForm()
         return context
 

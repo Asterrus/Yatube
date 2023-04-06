@@ -1,18 +1,25 @@
 {% extends "base.html" %}
-{% block content %}
-{% with page_obj.0.group as group %}
+{% with posts.0.group as group %} <!-- Исправить -->
+{% block title %}
 <title>Записи сообщества: {{ group.title }}</title>
-{{ group.title }}
-  <div class="container py-5">
-    <h1>{{ group.title }}</h1>
-    <p>{{ group.description }}</p>
-    {% for post in posts %}
-      {% include 'includes/post_card.html' %}
-      {% if not forloop.last %}<hr/>{% endif %}
-    {% endfor %}
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 d-flex justify-content-center">
+      <h1 class="index_title">{{ group.title }}</h1>
+      <p>{{ group.description }}</p>
+    </div>
   </div>
+</div>
+{% for post in posts %}
+  {% include 'includes/post_card.html' %}
+  {% if not forloop.last %}
+    <hr/>
+  {% endif %}
+{% endfor %}
+<div class="col-md-12 d-flex justify-content-center">{% include "includes/paginator.html" %}</div>
 
-  <div>{% include "includes/paginator.html" %}</div>
-{% endwith %}
 {% endblock content %}
-
+{% endwith %}

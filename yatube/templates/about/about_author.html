@@ -1,25 +1,20 @@
 {% extends "base.html" %}
+{% block title %}
+    <title>About</title>
+{% endblock %}
 {% block content %}
-{% load cache %}
-{% cache 500 about_author %}
-  <head>
-    <title>Об авторе</title>
-  </head>
-  <body>
-    <h1>О себе:</h1>
-    <p>Меня зовут Роман, я начинающий программист на Python.</p>
-    <p>
-      Мой гитхаб:
-      <a href='https://github.com/Asterrus'>https://github.com/Asterrus</a>
-    </p>
-    <p>
-      В нем пока мало проектов,
-      но мой путь программиста только начинается.
-    </p>
-    <p>
-      Мои хобби: Программирование(внезапно),
-      Warhammer40000, электронная музыка.
-    </p>
-  </body>
-{% endcache %}
+    {% load cache %}
+    {% cache 500 about_author %}
+        <div class="col-md-12">
+            <div class="card mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">О себе:</h5>
+                        <p class="card-text">Меня зовут Роман, я начинающий программист на Python.</p>
+                        <p class="card-text"> Мой гитхаб:<a href='https://github.com/Asterrus'>https://github.com/Asterrus</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endcache %}
 {% endblock content %}

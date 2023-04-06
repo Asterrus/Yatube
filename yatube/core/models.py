@@ -10,5 +10,4 @@ class BaseModel(models.Model):
     text = models.TextField('Текст', help_text='Введите текст')
 
     class Meta:
-        # Это абстрактная модель:
         abstract = True

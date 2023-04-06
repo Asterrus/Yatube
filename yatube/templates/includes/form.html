@@ -1,56 +1,28 @@
-<form method="post"
-      {% if post_detail %} action="{% url 'posts:add_comment' post_id %}"{% else %} action="" {% endif %}
-      enctype="multipart/form-data">
-    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-    {% if create_post %}
-    <div class="form-group row my-3 p-3">
-      <label for="id_text">
-        {{ form.text.label }}
-        <span class="required text-danger" >*</span>                  
-      </label>
-      {{form.text}}          
-      <small id="id_text-help" class="form-text text-muted">
-        {{ form.text.help_text }}
-      </small>                  
-   </div>
-    {% else %}
-    <div class="form-group mb-2">
-      <label for="id_text">
-        {{ form.text.label }}
-        <span class="required text-danger" >*</span>                  
-      </label>
-        <!-- <textarea name="text" cols="40" rows="10" class="form-control" required id="id_text">
-        </textarea> -->
-        <p>{{ form.text }}</p>
-        <small id="id_text-help" class="form-text text-muted">
-            {{ form.text.help_text }}
-        </small>
+<form method="post" action="{% url 'posts:post_create' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group row my-3 p-3 d-flex flex-column align-items-center">
+        <label for="id_text">{{ form.text.label }}<span class="required text-danger">*</span></label>
+        <div>{{ form.text }}</div>
+        <small id="id_text-help" class="form-text text-muted">{{ form.text.help_text }}</small>
     </div>
-    {% endif %}
-    {% if create_post %}      
-    <div class="form-group row my-3 p-3">
-      <label for="id_group">
-        Группа            
-      </label>
-      <select name="group" class="form-control" id="id_group">
-        {% for group in form.group %}
-        {{ group }}
-        {% endfor %}
-      </select>
-      <small id="id_group-help" class="form-text text-muted">
-        {{ form.group.help_text }}
-      </small>
+    <div class="form-group row my-3 p-3 justify-content-center">
+        <label for="id_group">{{ form.group.label }}<span class="required text-danger">*</span></label>
+        <select name="group" class="form-control border-secondary" id="id_group">
+            {% for group in form.group %}
+                {{ group }}
+            {% endfor %}
+        </select>
+        <small id="id_group-help" class="form-text text-muted">{{ form.group.help_text }}</small>
     </div>
-    <div class="form-group row my-3 p-3">
-      <label for="id_image">
-        {{ form.image.lable }}                       
-      </label>
-      {{ form.image }}                     
+    <div class="form-group row my-3 p-3 justify-content-center">
+        <label for="id_image">
+            {{ form.image.lable }}
+        </label>
+        {{ form.image }}
     </div>
-    {% endif %}
-    <div class="d-flex justify-content-start">
-      <button type="submit" class="btn btn-primary">
-        Сохранить
-      </button>
+    <div class="d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary">
+            Опубликовать
+        </button>
     </div>
-  </form>
+</form>

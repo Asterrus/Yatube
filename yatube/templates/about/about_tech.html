@@ -1,61 +1,24 @@
 {% extends "base.html" %}
+{% block title %}
+    <title>Tech</title>
+{% endblock %}
 {% block content %}
-{% load cache %}
-{% cache 500 about_tech %}
-  <title>Технологии</title>
-  <div class="row">
-    <h1>Вот что я умею</h1>
-    <aside class="col-12 col-md-3">
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">
-          Visual Studio Code
-          <a href="https://code.visualstudio.com/">
-            <img src="{% static 'img/vscode_logo.png' %}"
-                 width="100"
-                 height="100"
-                 alt=""
-                 class="d-inline-block alight-top"/>
-          </a>
-        </li>
-        <li class="list-group-item">
-          Github
-          <a href="https://github.com/">
-            <img src="{% static 'img/github_logo.jpg' %}"
-                 width="100"
-                 height="100"
-                 alt=""
-                 class="d-inline-block alight-top"/>
-          </a>
-        </li>
-        <li class="list-group-item">
-          Python
-          <a href="https://www.python.org/">
-            <img src="{% static 'img/python_logo.png' %}"
-                 width="100"
-                 height="100"
-                 alt=""
-                 class="d-inline-block alight-top"/>
-          </a>
-        </li>
-        <li class="list-group-item">
-          Django
-          <a href="https://www.djangoproject.com/">
-            <img src="{% static 'img/django_logo.png' %}"
-                 width="100"
-                 height="100"
-                 alt=""
-                 class="d-inline-block alight-top"/>
-          </a>
-        </li>
-      </ul>
-    </aside>
-    <article class="col-12 col-md-9">
-      <p>Пока что тяжело дается верстка HTML.</p>
-      <p>
-        В Django очень много встроенных функций,
-        моделей, форм - тяжело запоминается что куда и откуда.
-      </p>
-    </article>
-  </div>
-{% endcache %}
+    <img src="{% static 'img/stack/python-original.svg' %}" width="100" height="100" alt=""
+         class="d-inline-block alight-top"/>
+    <img src="{% static 'img/stack/django-plain.svg' %}" width="100" height="100" alt=""
+         class="d-inline-block alight-top"/>
+    <img src="{% static 'img/stack/fastapi-original.svg' %}" width="100" height="100" alt=""
+         class="d-inline-block alight-top"/>
+    <img src="{% static 'img/stack/flask-original.svg' %}" width="100" height="100" alt=""
+         class="d-inline-block alight-top"/>
+    <img src="{% static 'img/stack/git-original-wordmark.svg' %}" width="100" height="100" alt=""
+         class="d-inline-block alight-top"/>
+    <img src="{% static 'img/stack/postgresql-original.svg' %}" width="100" height="100" alt=""
+         class="d-inline-block alight-top"/>
+    <img src="{% static 'img/stack/mysql-original-wordmark.svg' %}" width="100" height="100" alt=""
+         class="d-inline-block alight-top"/>
+    <img src="{% static 'img/stack/html5-original.svg' %}" width="100" height="100" alt=""
+         class="d-inline-block alight-top"/>
+    <img src="{% static 'img/stack/css3-plain-wordmark.svg' %}" width="100" height="100" alt=""
+         class="d-inline-block alight-top"/>
 {% endblock content %}

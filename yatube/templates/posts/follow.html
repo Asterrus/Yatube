@@ -1,16 +1,30 @@
 {% extends "base.html" %}
+
 {% block title %}
-  <title>Посты любимых авторов</title>
+    <title>Посты любимых авторов</title>
 {% endblock title %}
+
 {% block content %}
-{% include 'posts/includes/switcher.html' %}
-  <div class="container py-5">
-    <h1 class="index_title">Посты любимых авторов</h1>
-    <hr>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 d-flex justify-content-center">
+                <h1 class="index_title">Последние обновления на сайте</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 d-flex justify-content-center">
+                {% include 'posts/includes/switcher.html' %}
+            </div>
+        </div>
+    </div>
+
     {% for post in posts %}
-          {% include 'includes/post_card.html' %}
-      {% if not forloop.last %}<hr/>{% endif %}
+        {% include 'includes/post_card.html' %}
+        {% if not forloop.last %}
+            <hr/>
+        {% endif %}
     {% endfor %}
-  </div>
-  <div>{% include "includes/paginator.html" %}</div>
+
+    <div class="col-md-12 d-flex justify-content-center">{% include "includes/paginator.html" %}</div>
+
 {% endblock content %}

@@ -1,78 +1,77 @@
 {% extends "base.html" %}
 {% load thumbnail %}
 {% block content %}
-  <title>Пост {{ post.text|truncatechars:30 }}</title>
-  <main>
-    <div class="row">
-      <aside class="col-12 col-md-3">
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">Дата публикации: {{ post.created|date:"d E Y" }}</li>
-          {% if post.group %}
-            <li class="list-group-item">
-              Группа: {{ post.group.title }}
-              <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
-            </li>
-          {% endif %}
-          <li class="list-group-item">
-            {% if post.author.first_name %}
-              Автор: {{ post.author.get_full_name }}
-            {% else %} 
-              Автор: {{ post.author.username }}
-            {% endif %}
-          </li>
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            Всего постов автора:  <span >{{ post.author.posts.count }}</span>
-          </li>
-          <li class="list-group-item">
-            <a href="{% url 'posts:profile' user %}">все посты пользователя</a>
-          </li>
-        </ul>
-      </aside>
-      <article class="col-12 col-md-9">
-        {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
-        <img class="card-img my-2" src="{{ im.url }}">
-        {% endthumbnail %}
-        <p>{{ post.text }}</p>
-        {% if request.user == post.author %}
-          <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">Редактировать запись</a>
-          <a
-            href="{% url 'posts:post_delete' post.id %}"
-            onclick="return confirm('Вы уверены?')"
-            class="btn btn-danger">Удалить запись
-          </a>
+<title>Пост {{ post.text|truncatechars:30 }}</title>
+<main>
+  <div class="row">
+    <aside class="col-12 col-md-3">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Дата публикации: {{ post.created|date:"d E Y" }}</li>
+        {% if post.group %}
+        <li class="list-group-item">
+          Группа: {{ post.group.title }}
+          <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
+        </li>
         {% endif %}
-          <!-- эта форма видна только авторизованному пользователю  -->
-          <div class="card my-4">
-            <h5 class="card-header">Добавить комментарий:</h5>
-            <div class="card-body">
-            {% with post_id=post.id post_detail=True %}
-              {% include 'includes/form.html' %}
-            {% endwith %}
-            </div>
-          </div>
-          <!-- комментарии перебираются в цикле  -->
-          {% if post.comments %}
-          {% for comment in post.comments.all %}
-          <div class="media mb-4">
-            <div class="media-body">
-              <h5 class="mt-0">
-                <a href="{% url 'posts:profile' comment.author.username %}">
-                  {% if comment.author.first_name %}
-                    {{ comment.author.get_full_name }}
-                  {% else %}
-                    {{ comment.author.username }}
-                  {% endif %}
-                </a>
-              </h5>
-              <p>
-                {{ comment.text }}
-              </p>
-              {% if not forloop.last %}<hr/>{% endif %}
-            </div>
-          </div>
-          {% endfor %}
+        <li class="list-group-item">
+          {% if post.author.first_name %}
+          Автор: {{ post.author.get_full_name }}
+          {% else %}
+          Автор: {{ post.author.username }}
           {% endif %}
-      </article>
-    </div>
-  </main>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          Всего постов автора: <span>{{ post.author.posts.count }}</span>
+        </li>
+        <li class="list-group-item">
+          <a href="{% url 'posts:profile' user %}">все посты пользователя</a>
+        </li>
+      </ul>
+    </aside>
+    <article class="col-12 col-md-9">
+      {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
+      <img class="card-img my-2" src="{{ im.url }}">
+      {% endthumbnail %}
+      <p>{{ post.text }}</p>
+      {% if request.user == post.author %}
+      <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">Редактировать запись</a>
+      <a href="{% url 'posts:post_delete' post.id %}" onclick="return confirm('Вы уверены?')"
+        class="btn btn-danger">Удалить запись
+      </a>
+      {% endif %}
+      <!-- эта форма видна только авторизованному пользователю  -->
+      <div class="card my-2">
+        <h5 class="card-header">Добавить комментарий</h5>
+        <div class="card-body d-flex flex-column align-items-center">
+          {% include 'includes/message_create_form.html' %}
+        </div>
+      </div>
+      <!-- комментарии перебираются в цикле  -->
+      {% if post.comments %}
+      <div id="comments">
+        {% for comment in post.comments.all %}
+        <div class="media mb-2">
+          <div class="media-body">
+            <h5 class="mt-0">
+              <a href="{% url 'posts:profile' comment.author.username %}">
+                {% if comment.author.first_name %}
+                {{ comment.author.get_full_name }}
+                {% else %}
+                {{ comment.author.username }}
+                {% endif %}
+              </a>
+            </h5>
+            <p>
+              {{ comment.text }}
+            </p>
+            {% if not forloop.last %}
+            <hr />{% endif %}
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+      {% endif %}
+    </article>
+  </div>
+</main>
 {% endblock content %}
