@@ -1,8 +1,5 @@
 {% extends "base.html" %}
+{% block title %}Регистрация{% endblock title %}
 {% block content %}
-<!-- исправить -->
-  <title>Зарегистрироваться</title>
-  {% with card_header='Зарегистрироваться' card_body='' form=form button_text='Зарегистрироваться' %}
-    {% include 'users/includes/card.html' %}
-  {% endwith %}
+    {% include 'includes/new_card.html' %}
 {% endblock content %}

@@ -1,8 +1,21 @@
 {% extends "base.html" %}
-{% block title %}Вы вышли из системы{% endblock %}
-<!-- исправить -->
+
+{% block title %}Yatube{% endblock %}
+
 {% block content %}
-  {% with card_header='Выход' card_body='Вы вышли из своей учётной записи. Ждём вас снова!' %}
-    {% include 'users/includes/card.html' %} 
-  {% endwith %}
-{% endblock %} 
+    <div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="card border-secondary m-2">
+            <div class="card-header border-secondary d-flex justify-content-center">
+                <a href="{% url 'posts:index' %}">На главную</a>
+            </div>
+            <div class="card-body border-secondary d-flex justify-content-center">
+                Хорошего дня!
+            </div>
+            <div class="card-footer border-secondary d-flex justify-content-center">
+                <a href="{% url 'users:login' %}">Авторизоваться</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

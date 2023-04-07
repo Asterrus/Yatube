@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load thumbnail %}
+{% block title %}Пост {{ post.text|truncatechars:30 }}{% endblock title %}
 {% block content %}
-<title>Пост {{ post.text|truncatechars:30 }}</title>
 <main>
   <div class="row">
     <aside class="col-12 col-md-3">
@@ -29,23 +29,18 @@
       </ul>
     </aside>
     <article class="col-12 col-md-9">
-      {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
-      <img class="card-img my-2" src="{{ im.url }}">
-      {% endthumbnail %}
+        {% thumbnail post.image "960x339" padding=True upscale=True crop="center" as im %}
+            <img src="{{ im.url }}" class="card-img-top" alt="">
+        {% endthumbnail %}
       <p>{{ post.text }}</p>
       {% if request.user == post.author %}
-      <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">Редактировать запись</a>
+      <a class="btn btn-primary btn-sm" href="{% url 'posts:post_edit' post.id %}">Редактировать запись</a>
       <a href="{% url 'posts:post_delete' post.id %}" onclick="return confirm('Вы уверены?')"
-        class="btn btn-danger">Удалить запись
+        class="btn btn-danger btn-sm">Удалить запись
       </a>
       {% endif %}
       <!-- эта форма видна только авторизованному пользователю  -->
-      <div class="card my-2">
-        <h5 class="card-header">Добавить комментарий</h5>
-        <div class="card-body d-flex flex-column align-items-center">
-          {% include 'includes/message_create_form.html' %}
-        </div>
-      </div>
+      {% include 'includes/new_card.html' %}
       <!-- комментарии перебираются в цикле  -->
       {% if post.comments %}
       <div id="comments">

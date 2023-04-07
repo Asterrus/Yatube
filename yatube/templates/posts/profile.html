@@ -1,43 +1,24 @@
-{% extends "base.html" %}
+{% extends "posts/post_base.html" %}
 
-{% block title %}
-<title>Профайл пользователя {{ author.get_full_name }}</title>
-{% endblock title %}
+{% block post_title %}{{ title }}{{ author.get_full_name }}{% endblock %}
 
-{% block content %}
-{% with page_obj.0.author as author %}
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12 d-flex justify-content-center">
-        <h1 class="index_title">
-          Все посты пользователя {% if author.first_name %} {{ author.get_full_name }}
-           {% else %} {{ author.username }} {% endif %}
-        </h1>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12 d-flex justify-content-center">
-        <h3>Всего постов: {{ author.posts.count }}</h3>
-        {% if user.is_authenticated and author != request.user %}
-          {% if following %}
-          <a class="btn btn-md btn-danger" href="{% url 'posts:profile_unfollow' author.username %}" role="button">
-            Отписаться
-          </a>
-          {% else %}
-          <a class="btn btn-md btn-primary" href="{% url 'posts:profile_follow' author.username %}" role="button">
-            Подписаться {{ author.username }}
-          </a>
-          {% endif %}
-        {% endif %}
-      </div>
-    </div>
-  </div>
-  {% for post in page_obj %}
-    {% include 'includes/post_card.html' with profile=True %}
-    {% if not forloop.last %} <hr/>{% endif %}
-  {% endfor %}
-  <hr />
-  {% include "includes/paginator.html" %}
+{% block post_header1 %}
+    Все посты пользователя {% if author.first_name %} {{ author.get_full_name }}
+    {% else %} {{ author.username }} {% endif %}
+{% endblock %}
 
-{% endwith %}
-{% endblock content %}
+{% block post_header2 %}
+    <h3>Всего постов: {{ author.posts.count }}</h3>
+    {% if user.is_authenticated and author != request.user %}
+      {% if following %}
+      <a class="btn btn-md btn-danger" href="{% url 'posts:profile_unfollow' author.username %}" role="button">
+        Отписаться
+      </a>
+      {% else %}
+      <a class="btn btn-md btn-primary" href="{% url 'posts:profile_follow' author.username %}" role="button">
+        Подписаться {{ author.username }}
+      </a>
+      {% endif %}
+    {% endif %}
+{% endblock %}
+

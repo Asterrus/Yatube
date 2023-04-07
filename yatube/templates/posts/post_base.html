@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{% block post_title %}{% endblock %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 d-flex justify-content-center">
+            <h1 class="index_title">{% block post_header1 %}{% endblock %}</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 d-flex justify-content-center">
+            {% block post_header2 %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+{% for post in posts %}
+    {% include 'posts/includes/post_card.html' %}
+    {% if not forloop.last %}
+        <hr />
+    {% endif %}
+{% endfor %}
+
+<div class="col-md-12 d-flex justify-content-center">{% include "includes/paginator.html" %}</div>
+
+{% endblock content %}

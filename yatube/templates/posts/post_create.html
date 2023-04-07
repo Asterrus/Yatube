@@ -1,23 +1,5 @@
 {% extends "base.html" %}
-{% block title %}
-<!-- ? -->
-{% endblock title %}
+{% block title %}{{ title }}{% endblock title %}
 {% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8 p-5">
-      <div class="card border-secondary">
-        <div class="card-header border-secondary">
-          {% if is_edit %}
-          Редактировать пост
-          {% else %}
-          Создание поста
-          {% endif %}
-        </div>
-        {% include 'includes/form.html'%}
-      </div>
-    </div>
-  </div>
-</div>
-
+    {% include 'includes/new_card.html' %}
 {% endblock content %}

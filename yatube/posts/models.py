@@ -36,7 +36,7 @@ class Post(BaseModel):
         verbose_name='Группа', related_name='posts',
         help_text='Выбор группы, к которой относится текст'
     )
-    image = models.ImageField('Картинка', upload_to='posts/', blank=True)
+    image = models.ImageField('Картинка', upload_to='posts/', default='no_foto.jpeg', blank=True)
 
     def __str__(self):
         return self.text[:POST_STR_NAME_LENGTH]
@@ -70,6 +70,7 @@ class Comment(BaseModel):
 
     def __str__(self):
         return self.text[:POST_STR_NAME_LENGTH]
+
 
 class Follow(models.Model):
     user = models.ForeignKey(

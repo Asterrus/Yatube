@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views.generic import ListView
 from posts.models import Post
 
-POSTS_ON_PAGE: int = 10
+POSTS_ON_PAGE: int = 4
 
 
 def page_not_found(request, exception):

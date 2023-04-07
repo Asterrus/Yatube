@@ -14,8 +14,6 @@ urls_and_templates_authorisation_not_required = {
 }
 
 urls_and_templates_authorisation_required = {
-    # Тут почемуто если поставить users а не registration,
-    # не проходит тест, хотя шаблон я переопределил.
     '/auth/password_change/done/': 'registration/password_change_done.html',
     '/auth/password_change/': 'users/password_change_form.html',
 }

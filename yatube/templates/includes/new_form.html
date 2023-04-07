@@ -1,0 +1,22 @@
+{% load widget_tweaks %}
+{% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}<div class="alert alert-danger">{{ error|escape }}</div>{% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}<div class="alert alert-danger">{{ error|escape }}</div>{% endfor %}
+{% endif %}
+<form method="post" action="{{ action }}" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="form-group row my-3 p-3 d-flex flex-column align-items-center">
+            <label for="{{ field.id_for_label }}">
+                {{ field.label }}{% if field.field.required %}<span class="required text-danger">*</span>{% endif %}
+            </label>
+            {% render_field field class+='form-control' %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+        </div>
+    {% endfor %}
+    <div class="d-flex justify-content-center p-2">
+        <button type="submit" class="btn btn-primary btn-sm">{{ button_text }}</button>
+    </div>
+</form>

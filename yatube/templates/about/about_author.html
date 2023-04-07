@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-{% block title %}
-    <title>About</title>
-{% endblock %}
+{% block title %}About{% endblock %}
 {% block content %}
     {% load cache %}
     {% cache 500 about_author %}
@@ -11,7 +9,16 @@
                     <div class="card-body">
                         <h5 class="card-title">О себе:</h5>
                         <p class="card-text">Меня зовут Роман, я начинающий программист на Python.</p>
-                        <p class="card-text"> Мой гитхаб:<a href='https://github.com/Asterrus'>https://github.com/Asterrus</a>
+                        <p class="card-text">Мой гитхаб:
+                            <a href='https://github.com/Asterrus'>
+                                <img src="{% static 'img/github-original.svg' %}" width="60" height="60" alt="" class="d-inline-block alight-top"/>
+                            </a>
+                        </p>
+                        <p class="card-text"> LinkedIn:
+                            <a href='https://linkedin.com/in/dyachuk-roman'>
+                                <img src="{% static 'img/linkedin/linkedin-original.svg' %}" width="60" height="60" alt="" class="d-inline-block alight-top"/>
+                            </a>
+                        </p>
                     </div>
                 </div>
             </div>
