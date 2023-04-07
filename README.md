@@ -67,10 +67,16 @@
 
    ```python
    cd yatube
-   python3 manage.py migrate
+   python manage.py migrate
+   ```
+   
+7. (Опционально) Загрузить фикстуры:
+
+   ```python
+   python manage.py loaddata posts/fixture/dump.json
    ```
 
-7. Запустить проект:
+8. Запустить проект:
    ```python
    python manage.py runserver
    ```
