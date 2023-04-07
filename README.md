@@ -1,4 +1,5 @@
 # Проект «Yatube»
+![Screenshot_6](https://user-images.githubusercontent.com/59145527/230685388-53b3a56f-b1ab-4d3d-a59f-abf9a28609a9.png)
 
 ### Описание
 Сервис для публикации блогов.
