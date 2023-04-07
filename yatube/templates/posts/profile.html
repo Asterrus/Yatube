@@ -11,11 +11,11 @@
     <h3>Всего постов: {{ author.posts.count }}</h3>
     {% if user.is_authenticated and author != request.user %}
       {% if following %}
-      <a class="btn btn-md btn-danger" href="{% url 'posts:profile_unfollow' author.username %}" role="button">
+      <a class="btn btn-sm btn-danger m-1" href="{% url 'posts:profile_unfollow' author.username %}" role="button">
         Отписаться
       </a>
       {% else %}
-      <a class="btn btn-md btn-primary" href="{% url 'posts:profile_follow' author.username %}" role="button">
+      <a class="btn btn-sm btn-primary m-1" href="{% url 'posts:profile_follow' author.username %}" role="button">
         Подписаться {{ author.username }}
       </a>
       {% endif %}

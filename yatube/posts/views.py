@@ -40,7 +40,7 @@ class GroupListView(PostsListView):
 
 class ProfileView(PostsListView):
     template_name: str = 'posts/profile.html'
-    extra_context = {'title': 'Профайл пользователя: '}
+    extra_context = {'title': 'Профайл пользователя: ', 'profile': True}
 
     def get_queryset(self):
         return Post.objects.select_related('group', 'author').filter(
@@ -153,5 +153,6 @@ def follow(request, username):
 @login_required()
 def unfollow(request, username):
     author = get_object_or_404(User, username=username)
-    Follow.objects.get(user=request.user, author=author)
+    follow = get_object_or_404(Follow, user=request.user, author=author)
+    follow.delete()
     return redirect(reverse('posts:profile', kwargs={'username': username}))
